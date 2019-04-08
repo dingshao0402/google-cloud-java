@@ -10,6 +10,7 @@ import com.google.protobuf.Value;
 import java.io.IOException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.threeten.bp.Duration;
 
 /** Smoke tests for {@link com.google.cloud.examples.securitycenter.snippets.FindingSnippets} */
 public class ITFindingSnippets {
@@ -20,7 +21,8 @@ public class ITFindingSnippets {
   @BeforeClass
   public static void setUp() throws IOException {
     SOURCE_NAME = SourceName.parse(SourceSnippets.createSource(getOrganizationId()).getName());
-    FINDING_NAME = FindingName.parse(FindingSnippets.createFinding(SOURCE_NAME, "testfindingid").getName());
+    FINDING_NAME =
+        FindingName.parse(FindingSnippets.createFinding(SOURCE_NAME, "testfindingid").getName());
   }
 
   @Test
@@ -36,7 +38,11 @@ public class ITFindingSnippets {
   @Test
   public void testUpdateFinding() throws IOException {
     Value stringValue = Value.newBuilder().setStringValue("value").build();
-    assertTrue(FindingSnippets.updateFinding(FINDING_NAME).getSourcePropertiesMap().get("stringKey").equals(stringValue));
+    assertTrue(
+        FindingSnippets.updateFinding(FINDING_NAME)
+            .getSourcePropertiesMap()
+            .get("stringKey")
+            .equals(stringValue));
   }
 
   @Test
@@ -56,11 +62,42 @@ public class ITFindingSnippets {
 
   @Test
   public void testTestIamPermissions() throws IOException {
-    assertTrue(FindingSnippets.testIamPermissions(SOURCE_NAME).getPermissions(0).equals("securitycenter.findings.update"));
+    assertTrue(
+        FindingSnippets.testIamPermissions(SOURCE_NAME)
+            .getPermissions(0)
+            .equals("securitycenter.findings.update"));
+  }
+
+  @Test
+  public void testGroupFindings() throws IOException {
+    assertTrue(FindingSnippets.groupFindings(getOrganizationId()).size() > 0);
+  }
+
+  @Test
+  public void testGroupFindingsWithSource() throws IOException {
+    assertTrue(FindingSnippets.groupFindingsWithSource(getOrganizationId()).size() > 0);
+  }
+
+  @Test
+  public void testGroupActiveFindingsWithSource() throws IOException {
+    assertTrue(FindingSnippets.groupActiveFindingsWithSource(getOrganizationId()).size() > 0);
+  }
+
+  @Test
+  public void testGroupActiveFindingsWithSourceAtTime() throws IOException {
+    assertTrue(FindingSnippets.groupActiveFindingsWithSourceAtTime(getOrganizationId()).size() > 0);
+  }
+
+  @Test
+  public void testGroupActiveFindingsWithSourceAndCompareDuration() throws IOException {
+    assertTrue(
+        FindingSnippets.groupActiveFindingsWithSourceAndCompareDuration(
+                    getOrganizationId(), Duration.ofSeconds(86400))
+                .size()
+            > 0);
   }
 
   private static OrganizationName getOrganizationId() {
     return OrganizationName.of(System.getenv("GCLOUD_ORGANIZATION"));
   }
-
 }

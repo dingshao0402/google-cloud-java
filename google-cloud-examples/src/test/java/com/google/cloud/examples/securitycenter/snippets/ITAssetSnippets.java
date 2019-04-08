@@ -19,6 +19,7 @@ package com.google.cloud.examples.securitycenter.snippets;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import com.google.cloud.securitycenter.v1.GroupResult;
 import com.google.cloud.securitycenter.v1.ListAssetsResponse.ListAssetsResult;
 import com.google.cloud.securitycenter.v1.ListAssetsResponse.ListAssetsResult.StateChange;
 import com.google.cloud.securitycenter.v1.OrganizationName;
@@ -68,6 +69,26 @@ public class ITAssetSnippets {
     assertTrue("Result: " + result.toString(), result.toString().contains("ADDED"));
     assertTrue(3 >= result.size());
     assertEquals(result.get(0).getStateChange(), StateChange.ADDED);
+  }
+
+  @Test
+  public void testGroupAssets() {
+    ImmutableList<GroupResult> results = AssetSnippets.groupAssets(getOrganizationId());
+    assertTrue(results.size() > 0);
+  }
+
+  @Test
+  public void testGroupAssetsWithFilter() {
+    ImmutableList<GroupResult> results = AssetSnippets.groupAssetsWithFilter(getOrganizationId());
+    assertTrue(results.size() > 0);
+  }
+
+  @Test
+  public void testGroupAssetsWithCompareDuration() {
+    ImmutableList<GroupResult> results =
+        AssetSnippets.groupAssetsWithCompareDuration(
+            getOrganizationId(), Duration.ofSeconds(86400));
+    assertTrue(results.size() > 0);
   }
 
   private static OrganizationName getOrganizationId() {
